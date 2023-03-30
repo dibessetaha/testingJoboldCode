@@ -1,5 +1,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 exports.signup = (req, res, next) => {
   bcrypt
     .hash(req.body.password, 10)
@@ -21,18 +23,18 @@ exports.signup = (req, res, next) => {
       user
         .save()
         .then(() => res.status(201).json({ message: "User Created" }))
-        .catch((error) => res.status(400).json({ error: "cannot save user" }));
+        .catch((e) => console.log(e));
     })
-    .catch((error) => res.status(500).json({ error }));
+    .catch((e) => console.log(e));
 };
 
 exports.login = (req, res, next) => {
-  User.findOne({ email: req.body.emial })
+  User.findOne({ email: req.body.email })
     .then((user) => {
       if (!user) {
         return res
           .status(401)
-          .json({ message: "Both email/password incorrecte" });
+          .json({ message: "Both email/password incorrect" });
         //we don't have to annoce that the user is not in our database (security concepts)
       }
       bcrypt.compare(req.body.password, user.password).then((valid) => {
@@ -44,10 +46,10 @@ exports.login = (req, res, next) => {
         res.status(200).json({
           userId: user._id,
           token: jwt.sign({ userId: user._id }, "RANDOM_TOKEN_SECRET", {
-            expireIn: "24h",
+            expiresIn: "6h",
           }),
         });
       });
     })
-    .catch();
+    .catch((error) => res.status(500).json({ error }));
 };
