@@ -5,7 +5,7 @@ const app = express();
 const userRoutes = require("./routes/user");
 
 mongoose
-  .connect("mongodb://0.0.0.0:27017/jobold", {
+  .connect("mongodb://0.0.0.0:27017/", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     socketTimeoutMS: 0,
